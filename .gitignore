@@ -1,0 +1,31 @@
+#virtual environment
+venv/
+
+#environment variables 
+.env
+
+#python cache
+__pycache__/
+*.pyc
+*.pyo
+
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Data files (raw data usually large/private)
+data/raw/*
+!data/raw/.gitkeep
+
+# Trained models (usually large files)
+models/*.pkl
+
+# Logs
+logs/*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional)
+.vscode/
