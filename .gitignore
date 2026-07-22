@@ -29,3 +29,13 @@ Thumbs.db
 
 # VS Code settings (optional)
 .vscode/
+
+# Ignore executed/EDA notebooks
+notebooks/01_eda_.ipynb
+
+# Ignore executed notebook copies and checkpoints
+notebooks/*_executed.ipynb
+.ipynb_checkpoints/
+
+# Ignore processed datasets (large files)
+data/processed/*.csv
