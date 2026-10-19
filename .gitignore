@@ -39,3 +39,8 @@ notebooks/*_executed.ipynb
 
 # Ignore processed datasets (large files)
 data/processed/*.csv
+
+.env
+venv/
+__pycache__/
+*.db

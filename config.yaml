@@ -7,3 +7,4 @@ paths:
 thresholds:
   delay_risk: 0.5
   shortage_risk: 0.5
+
