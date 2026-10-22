@@ -1,8 +1,18 @@
+paths:
+  cleaned_data: data/processed/eda_cleaned_dataset.csv
+  db: data/supply_chain.db
+  delay_model: models/delay_prediction_model.joblib
+  shortage_model: models/shortage_prediction_model.joblib
+
+thresholds:
+  delay_risk: 0.5
+  shortage_risk: 0.5
+
 llm:
   provider: groq
-  model: llama-3.1-8b-instant
+  model: openai/gpt-oss-20b
   temperature: 0.2
-  max_tokens: 400
+  max_tokens: 1500
   timeout_seconds: 30
 
 prompts:
