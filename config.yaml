@@ -17,4 +17,4 @@ llm:
 
 prompts:
   active_briefing_version: v3
-  active_whatif_version: v1
+  active_whatif_version: v3
