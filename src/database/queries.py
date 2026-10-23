@@ -56,6 +56,27 @@ def filter_orders(shipping_mode=None, region=None, limit=100):
     sql += " LIMIT ?"
     params.append(limit)
     return _run(sql, params=tuple(params))
+def scenario_stats(region, from_mode, to_mode):
+    """Historical stats for two shipping modes in one region (None = all regions)."""
+    def stats(mode):
+        sql = """
+            SELECT COUNT(*) AS total_orders,
+                   ROUND(AVG(late_delivery_risk) * 100, 1) AS late_pct,
+                   ROUND(AVG(days_for_shipping_real), 2) AS avg_real_days,
+                   ROUND(AVG(days_for_shipment_scheduled), 2) AS avg_scheduled_days
+            FROM orders
+            WHERE shipping_mode = ?
+        """
+        params = [mode]
+        if region:
+            sql += " AND order_region = ?"
+            params.append(region)
+        row = _run(sql, params=tuple(params)).iloc[0]
+        if row.total_orders == 0:
+            raise ValueError(f"No orders for {mode} in {region}")
+        return row.to_dict()
+
+    return stats(from_mode), stats(to_mode)
 if __name__ == "__main__":
     print(mode_performance())
     print(region_mode_risk().head())
