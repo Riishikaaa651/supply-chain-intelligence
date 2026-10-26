@@ -1,12 +1,13 @@
 paths:
-  cleaned_data: data/processed/eda_cleaned_dataset.csv
   db: data/supply_chain.db
+  cleaned_data: data/processed/eda_cleaned_dataset.csv
   delay_model: models/delay_prediction_model.joblib
   shortage_model: models/shortage_prediction_model.joblib
 
 thresholds:
-  delay_risk: 0.5
-  shortage_risk: 0.5
+  delay: 0.5
+  shortage: 0.5
+
 
 llm:
   provider: groq
@@ -16,5 +17,23 @@ llm:
   timeout_seconds: 30
 
 prompts:
-  active_briefing_version: v3
-  active_whatif_version: v3
+  active_delay_briefing_version: v3
+  active_delay_whatif_version: v4
+  active_shortage_briefing_version: v3
+  active_shortage_whatif_version: v4
+
+whatif_questions:
+  delay:
+    - "What if we ship this order with First Class instead?"
+    - "What if we switch this order to Same Day shipping?"
+    - "What if we upgrade to Second Class?"
+    - "What if we switch to Standard Class?"
+    - "What if this order is sent to Western Europe instead?"
+    - "What if the delivery takes 2 days longer than scheduled?"
+  shortage:
+    - "What if demand for this product rises by 20% next week?"
+    - "What if demand drops by 30%?"
+    - "What if demand doubles?"
+    - "What if the demand variability (standard deviation) doubles?"
+    - "What if demand rises by one standard deviation?"
+    - "What if demand rises by 50%?"
