@@ -35,7 +35,7 @@ notebooks/*_executed.ipynb
 .ipynb_checkpoints/
 
 # Ignore processed datasets (large files)
-data/processed/*.csv
+data/processed/
 
 .env
 venv/
