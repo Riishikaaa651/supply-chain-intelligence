@@ -37,3 +37,9 @@ whatif_questions:
     - "What if the demand variability (standard deviation) doubles?"
     - "What if demand rises by one standard deviation?"
     - "What if demand rises by 50%?"
+
+api:
+  title: Supply Chain Decision Intelligence API
+  version: 0.1.0
+  host: 127.0.0.1
+  port: 8000

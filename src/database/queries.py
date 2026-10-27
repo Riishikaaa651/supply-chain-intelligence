@@ -104,3 +104,63 @@ def get_delay_context():
     mode_table = "; ".join(f"{r.shipping_mode}: {r.pct}% late" for r in modes.itertuples())
     region_table = "; ".join(f"{r.order_region}: {r.pct}% late" for r in regions.itertuples())
     return {"overall_late_pct": overall, "mode_table": mode_table, "region_table": region_table}
+
+def summary():
+    """KPI numbers for the top of the dashboard."""
+    df = run_query("""
+        SELECT COUNT(*)                                          AS total_orders,
+               SUM(d.risk_level = 'High')                        AS delay_high,
+               SUM(s.risk_level = 'High')                        AS shortage_high,
+               SUM(d.risk_level = 'High' AND s.risk_level = 'High') AS both_high,
+               ROUND(AVG(d.delay_prob), 3)                       AS avg_delay_prob
+        FROM delay_predictions d
+        JOIN shortage_predictions s ON s.order_item_id = d.order_item_id
+    """)
+    return df.iloc[0].to_dict()
+
+
+def filter_options():
+    """Values for the dashboard filter dropdowns."""
+    modes = run_query("SELECT DISTINCT shipping_mode FROM orders ORDER BY 1")["shipping_mode"].tolist()
+    regions = run_query("SELECT DISTINCT order_region FROM orders ORDER BY 1")["order_region"].tolist()
+    return {"shipping_modes": modes, "regions": regions}
+
+
+def risky_orders(risk_type="both", risk_level="High", shipping_mode=None, region=None, limit=20, offset=0):
+    """The risk table. Filters are optional; values go in as parameters (safe from SQL injection)."""
+    where, params = [], []
+    if risk_type in ("delay", "both"):
+        where.append("d.risk_level = ?")
+        params.append(risk_level)
+    if risk_type in ("shortage", "both"):
+        where.append("s.risk_level = ?")
+        params.append(risk_level)
+    if shipping_mode:
+        where.append("o.shipping_mode = ?")
+        params.append(shipping_mode)
+    if region:
+        where.append("o.order_region = ?")
+        params.append(region)
+
+    # column names come from this fixed dictionary, never from the user
+    order_by = {"delay": "d.delay_prob DESC",
+                "shortage": "s.shortage_prob DESC",
+                "both": "d.delay_prob + s.shortage_prob DESC"}[risk_type]
+
+    base = """
+        FROM delay_predictions d
+        JOIN shortage_predictions s ON s.order_item_id = d.order_item_id
+        JOIN orders o               ON o.order_item_id = d.order_item_id
+        WHERE """ + " AND ".join(where)
+
+    total = int(run_query("SELECT COUNT(*) AS n " + base, params=tuple(params)).iloc[0]["n"])
+    rows = run_query(f"""
+        SELECT d.order_item_id, d.order_id, o.shipping_mode, o.order_region,
+               o.category_name, o.product_name,
+               ROUND(d.delay_prob, 3)    AS delay_prob,  d.risk_level AS delay_risk,
+               ROUND(s.shortage_prob, 3) AS shortage_score, s.risk_level AS shortage_risk
+        {base}
+        ORDER BY {order_by}
+        LIMIT ? OFFSET ?
+    """, params=tuple(params) + (limit, offset))
+    return total, rows.to_dict("records")
