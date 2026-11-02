@@ -1,16 +1,19 @@
+import os
+
 import requests
 import streamlit as st
 
 from src.database.db_connection import load_config
 
 _cfg = load_config()["api"]
-API = f"http://{_cfg['host']}:{_cfg['port']}"
+# On the server, API_URL points to the deployed API. Locally we fall back to config.yaml.
+API = (os.environ.get("API_URL") or f"http://{_cfg['host']}:{_cfg['port']}").rstrip("/")
 TIMEOUT = 90          # the LLM can be slow, so wait up to 90 seconds
 
 
 @st.cache_data(ttl=300)
 def preset_questions(risk_type):
-    r = requests.get(f"{API}/whatif/questions", params={"risk_type": risk_type}, timeout=10)
+    r = requests.get(f"{API}/whatif/questions", params={"risk_type": risk_type}, timeout=90)
     r.raise_for_status()
     return r.json()["questions"]
 

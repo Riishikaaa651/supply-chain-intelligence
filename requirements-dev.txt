@@ -1,0 +1,12 @@
+-r requirements.txt
+-r dashboard/requirements.txt
+numpy
+scikit-learn
+xgboost
+jupyter
+joblib
+sqlalchemy
+openai
+pytest
+httpx
+matplotlib

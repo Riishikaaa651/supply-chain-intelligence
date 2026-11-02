@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))   # so "src" can be imported
-
+import os
 import requests
 import streamlit as st
 from src.database.db_connection import load_config
@@ -12,7 +12,8 @@ from dashboard.components.charts import (
 )
 
 cfg = load_config()["api"]
-API = f"http://{cfg['host']}:{cfg['port']}"
+# On the server, API_URL points to the deployed API. Locally we fall back to config.yaml.
+API = (os.environ.get("API_URL") or f"http://{cfg['host']}:{cfg['port']}").rstrip("/")
 
 st.set_page_config(page_title="Supply Chain Intelligence", layout="wide")
 css = (Path(__file__).parent / "assets" / "style.css").read_text(encoding="utf-8")
@@ -20,7 +21,8 @@ st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=60)
 def get(path, params=None):
-    r = requests.get(f"{API}{path}", params=params, timeout=30)
+    # 90 seconds: a sleeping free-tier API can take a minute to wake up
+    r = requests.get(f"{API}{path}", params=params, timeout=90)
     r.raise_for_status()
     return r.json()
 
@@ -31,7 +33,8 @@ st.sidebar.markdown("<div class='brand'>Supply Chain<br>Intelligence</div>", uns
 try:
     options = get("/filters")
 except requests.exceptions.RequestException:
-    st.error("Cannot reach the API. Start it first with: uvicorn src.api.main:app --reload")
+    st.error("Cannot reach the API. If it is starting up, wait a minute and refresh the page. "
+             "Running locally? Start it with: uvicorn src.api.main:app --reload")
     st.stop()
 
 st.sidebar.markdown("<div class='side-label'>Filters</div>", unsafe_allow_html=True)
