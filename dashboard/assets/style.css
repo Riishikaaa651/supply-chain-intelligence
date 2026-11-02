@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ---------- Base: deep navy with soft glows ---------- */
+.stApp {
+  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(59, 130, 246, 0.20) 0, transparent 38%),
+    radial-gradient(circle at 92% 90%, rgba(20, 184, 166, 0.13) 0, transparent 40%),
+    #0a0f1c;
+  background-attachment: fixed;
+}
+.stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp label {
+  font-family: 'Inter', sans-serif;
+}
+
+.block-container {
+  padding-top: 2.2rem;
+  max-width: 1280px;
+}
+
+/* ---------- Hide the default Streamlit extras ---------- */
+#MainMenu, footer,
+[data-testid="stMainMenu"],
+[data-testid="stDeployButton"],
+[data-testid="stAppDeployButton"],
+.stDeployButton {
+  display: none !important;
+}
+[data-testid="stHeader"] {
+  background: transparent;
+}
+
+/* ---------- Sidebar ---------- */
+[data-testid="stSidebar"] {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+[data-testid="stSidebar"] > div:first-child {
+  background: transparent;
+}
+
+.brand {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.side-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+/* ---------- Page header ---------- */
+.app-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+  margin: 0;
+  padding: 0;
+}
+.app-subtitle {
+  color: #94a3b8;
+  font-size: 0.98rem;
+  margin: 4px 0 26px 0;
+}
+
+/* ---------- Glass cards ---------- */
+[data-testid="stMetric"],
+[data-testid="stChatMessage"],
+[data-testid="stExpander"],
+.glass {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+}
+
+/* KPI cards: muted label, big number, colour accent on top */
+[data-testid="stMetric"] {
+  padding: 16px 20px;
+  border-top: 3px solid #475569;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+[data-testid="stMetric"]:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+}
+[data-testid="stMetricLabel"] p {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+[data-testid="stMetricValue"] {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+}
+div[data-testid="stHorizontalBlock"] > div:nth-child(1) [data-testid="stMetric"] { border-top-color: #60a5fa; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) [data-testid="stMetric"] { border-top-color: #fbbf24; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) [data-testid="stMetric"] { border-top-color: #22d3ee; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(4) [data-testid="stMetric"] { border-top-color: #f87171; }
+
+/* ---------- Filter chips ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 6px 0;
+}
+.chip {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  background: rgba(96, 165, 250, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+
+/* ---------- Section headings ---------- */
+.section {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 28px 0 10px 0;
+}
+
+/* ---------- Inputs and tables ---------- */
+div[data-baseweb="select"] > div,
+[data-testid="stChatInput"] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+[data-testid="stDataFrame"] {
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+[data-testid="stPlotlyChart"] {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+  padding: 12px 8px;
+}
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 4px 0 8px 2px;
+}
+
+/* sidebar assistant button */
+[data-testid="stSidebar"] .stButton > button {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(34, 211, 238, 0.20));
+  color: #f8fafc;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  transition: all 0.15s ease;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+  border-color: rgba(34, 211, 238, 0.7);
+  transform: translateY(-1px);
+}
+div[role="dialog"] {
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+}
+
+[data-testid="stSidebarNav"] { display: none; }
