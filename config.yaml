@@ -18,9 +18,9 @@ llm:
 
 prompts:
   active_delay_briefing_version: v3
-  active_delay_whatif_version: v4
+  active_delay_whatif_version: v5
   active_shortage_briefing_version: v3
-  active_shortage_whatif_version: v4
+  active_shortage_whatif_version: v5
 
 whatif_questions:
   delay:
