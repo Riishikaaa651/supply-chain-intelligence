@@ -38,3 +38,7 @@ Thumbs.db
 
 # VS Code settings (optional)
 .vscode/
+
+# Database (only the slim deploy copy is committed)
+*.db
+!data/supply_chain_deploy.db

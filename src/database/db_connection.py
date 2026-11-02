@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from pathlib import Path
 import yaml
@@ -10,6 +11,9 @@ def load_config():
 
 def get_connection():
     cfg = load_config()
-    db_path = PROJECT_ROOT / cfg["paths"]["db"]
+    # DB_PATH (environment variable) overrides config.yaml. Used on the server,
+    # where we point to the small deploy database.
+    db_file = os.environ.get("DB_PATH") or cfg["paths"]["db"]
+    db_path = PROJECT_ROOT / db_file          # an absolute path also works here
     db_path.parent.mkdir(parents=True, exist_ok=True)
     return sqlite3.connect(db_path)
