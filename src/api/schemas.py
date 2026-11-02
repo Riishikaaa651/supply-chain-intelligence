@@ -108,3 +108,26 @@ class CategoryStat(BaseModel):
     orders: int
     avg_shortage_prob: float
     high_risk_pct: float
+
+class MonthStat(BaseModel):
+    month: str
+    orders: int
+    late_pct: float
+
+class RiskCount(BaseModel):
+    risk_type: Literal["delay", "shortage"]
+    risk_level: str
+    orders: int
+
+
+class HeatCell(BaseModel):
+    shipping_mode: str
+    order_region: str
+    orders: int
+    avg_delay_prob: float
+
+
+class MonthStat(BaseModel):
+    month: str
+    orders: int
+    late_pct: float

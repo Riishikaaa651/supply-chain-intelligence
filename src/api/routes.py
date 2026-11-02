@@ -10,7 +10,7 @@ from src.api.schemas import (
     OrderRequest, DelayPrediction, ShortagePrediction,
     BriefingRequest, BriefingResponse,
     WhatIfRequest, WhatIfResponse, WhatIfQuestions,
-    Summary, FilterOptions, RiskTable, ModeStat, CategoryStat,
+    Summary, FilterOptions, RiskTable, ModeStat, CategoryStat, RiskCount, HeatCell, MonthStat,
 )
 
 router = APIRouter()
@@ -105,10 +105,29 @@ def risky_orders(
 
 
 @router.get("/charts/delay-by-mode", response_model=list[ModeStat], tags=["Dashboard"])
-def chart_delay_by_mode():
-    return [_clean(r) for r in queries.delay_by_mode().to_dict("records")]
+def chart_delay_by_mode(region: Optional[str] = None):
+    return [_clean(r) for r in queries.delay_by_mode(region).to_dict("records")]
 
 
 @router.get("/charts/shortage-by-category", response_model=list[CategoryStat], tags=["Dashboard"])
-def chart_shortage_by_category(limit: int = Query(10, ge=1, le=30)):
-    return [_clean(r) for r in queries.shortage_by_category(limit).to_dict("records")]
+def chart_shortage_by_category(
+    limit: int = Query(10, ge=1, le=30),
+    shipping_mode: Optional[str] = None,
+    region: Optional[str] = None,
+):
+    return [_clean(r) for r in queries.shortage_by_category(limit, shipping_mode, region).to_dict("records")]
+
+
+@router.get("/charts/risk-distribution", response_model=list[RiskCount], tags=["Dashboard"])
+def chart_risk_distribution(shipping_mode: Optional[str] = None, region: Optional[str] = None):
+    return [_clean(r) for r in queries.risk_distribution(shipping_mode, region).to_dict("records")]
+
+
+@router.get("/charts/delay-heatmap", response_model=list[HeatCell], tags=["Dashboard"])
+def chart_delay_heatmap(region: Optional[str] = None):
+    return [_clean(r) for r in queries.delay_heatmap().to_dict("records")]
+
+
+@router.get("/charts/monthly-trend", response_model=list[MonthStat], tags=["Dashboard"])
+def chart_monthly_trend(shipping_mode: Optional[str] = None, region: Optional[str] = None):
+    return [_clean(r) for r in queries.monthly_trend(shipping_mode, region).to_dict("records")]
