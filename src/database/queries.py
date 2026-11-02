@@ -11,17 +11,33 @@ def run_query(sql, params=()):
         conn.close()   # always close, even if the query fails
 
 
-def delay_by_mode():
-    return run_query("""
+def _where(shipping_mode=None, region=None):
+    """Build an optional WHERE clause on the orders table (alias o)."""
+    where, params = [], []
+    if shipping_mode:
+        where.append("o.shipping_mode = ?")
+        params.append(shipping_mode)
+    if region:
+        where.append("o.order_region = ?")
+        params.append(region)
+    sql = (" WHERE " + " AND ".join(where)) if where else ""
+    return sql, tuple(params)
+
+
+# ---------------- Chart queries ----------------
+def delay_by_mode(region=None):
+    where, params = _where(region=region)
+    return run_query(f"""
         SELECT o.shipping_mode,
-               COUNT(*)                            AS orders,
-               ROUND(AVG(d.delay_prob), 3)         AS avg_delay_prob,
+               COUNT(*)                                     AS orders,
+               ROUND(AVG(d.delay_prob), 3)                  AS avg_delay_prob,
                ROUND(100.0 * AVG(d.risk_level = 'High'), 1) AS high_risk_pct
         FROM delay_predictions d
         JOIN orders o ON o.order_item_id = d.order_item_id
+        {where}
         GROUP BY o.shipping_mode
         ORDER BY avg_delay_prob DESC
-    """)
+    """, params=params)
 
 
 def delay_by_region():
@@ -36,17 +52,66 @@ def delay_by_region():
     """)
 
 
-def shortage_by_category(limit=10):
-    return run_query("""
-        SELECT category_name,
-               COUNT(*)                                    AS orders,
-               ROUND(AVG(shortage_prob), 3)                AS avg_shortage_prob,
-               ROUND(100.0 * AVG(risk_level = 'High'), 1)  AS high_risk_pct
-        FROM shortage_predictions
-        GROUP BY category_name
+def shortage_by_category(limit=10, shipping_mode=None, region=None):
+    where, params = _where(shipping_mode, region)
+    return run_query(f"""
+        SELECT s.category_name,
+               COUNT(*)                                     AS orders,
+               ROUND(AVG(s.shortage_prob), 3)               AS avg_shortage_prob,
+               ROUND(100.0 * AVG(s.risk_level = 'High'), 1) AS high_risk_pct
+        FROM shortage_predictions s
+        JOIN orders o ON o.order_item_id = s.order_item_id
+        {where}
+        GROUP BY s.category_name
+        HAVING COUNT(*) >= 10
         ORDER BY avg_shortage_prob DESC
         LIMIT ?
-    """, params=(limit,))
+    """, params=params + (limit,))
+
+
+def risk_distribution(shipping_mode=None, region=None):
+    """How many orders are Low / Medium / High, for delay and for shortage."""
+    where, params = _where(shipping_mode, region)
+    return run_query(f"""
+        SELECT 'delay' AS risk_type, d.risk_level, COUNT(*) AS orders
+        FROM delay_predictions d
+        JOIN orders o ON o.order_item_id = d.order_item_id
+        {where}
+        GROUP BY d.risk_level
+        UNION ALL
+        SELECT 'shortage' AS risk_type, s.risk_level, COUNT(*) AS orders
+        FROM shortage_predictions s
+        JOIN orders o ON o.order_item_id = s.order_item_id
+        {where}
+        GROUP BY s.risk_level
+    """, params=params + params)
+
+
+def delay_heatmap():
+    """Average delay probability for every shipping mode x region pair."""
+    return run_query("""
+        SELECT o.shipping_mode,
+               d.order_region,
+               COUNT(*)                    AS orders,
+               ROUND(AVG(d.delay_prob), 3) AS avg_delay_prob
+        FROM delay_predictions d
+        JOIN orders o ON o.order_item_id = d.order_item_id
+        GROUP BY o.shipping_mode, d.order_region
+    """)
+
+
+def monthly_trend(shipping_mode=None, region=None):
+    """Orders per month and the real late-delivery rate (from the orders table)."""
+    where, params = _where(shipping_mode, region)
+    return run_query(f"""
+        SELECT strftime('%Y-%m', o.order_date_dateorders)  AS month,
+               COUNT(*)                                    AS orders,
+               ROUND(100.0 * AVG(o.late_delivery_risk), 1) AS late_pct
+        FROM orders o
+        {where}
+        GROUP BY month
+        ORDER BY month
+    """, params=params)
 
 
 def top_risky_orders(limit=10):
@@ -63,7 +128,7 @@ def top_risky_orders(limit=10):
     """, params=(limit,))
 
 
-#For llm client, we need to get the facts for a specific order item to explain its delay or shortage risk. The following functions retrieve those facts from the database.
+# For the LLM client: facts about one specific order item, used to explain its delay or shortage risk.
 def get_delay_facts(order_item_id):
     """All facts the LLM needs about one order's delay risk."""
     df = run_query("""
@@ -90,6 +155,7 @@ def get_shortage_facts(order_item_id):
     """, params=(order_item_id,))
     return df.iloc[0].to_dict() if len(df) else None
 
+
 def get_delay_context():
     """Extra context for the LLM: late rates overall, per shipping mode, and per region."""
     overall = run_query("SELECT ROUND(100.0 * AVG(late_delivery_risk), 1) AS pct FROM orders").iloc[0]["pct"]
@@ -105,6 +171,8 @@ def get_delay_context():
     region_table = "; ".join(f"{r.order_region}: {r.pct}% late" for r in regions.itertuples())
     return {"overall_late_pct": overall, "mode_table": mode_table, "region_table": region_table}
 
+
+# ---------------- Dashboard ----------------
 def summary():
     """KPI numbers for the top of the dashboard."""
     df = run_query("""
