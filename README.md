@@ -50,7 +50,7 @@ Streamlit dashboard  -->  FastAPI  -->  SQLite (orders + stored predictions)
 - **Shortage model:** Logistic Regression with balanced class weights. It catches 58% of shortage orders (recall 0.58), but precision is only 0.11, because shortages are rare (4% of the test set). Random Forest and XGBoost did worse (recall 0.18). So I use the score only to rank orders, not as a yes/no prediction.
 
 ## Tech stack
-Python, Pandas, scikit-learn / XGBoost, SQLite, FastAPI, Pydantic, Streamlit, Plotly, Groq API (`openai/gpt-oss-120b`), pytest. Deployed on Render (API) and Streamlit Community Cloud (dashboard).
+Python, Pandas, scikit-learn / XGBoost, SQLite, FastAPI, Pydantic, Streamlit, Plotly, Groq API (`openai/gpt-oss-120b`), pytest. Deployed on Render (API) and Streamlit Community Cloud (dashboard). 
 
 ## Project structure
 ```
