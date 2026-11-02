@@ -27,7 +27,7 @@ I built this project to answer one question: which orders are likely to arrive l
 
 **Risk table**
 
-![Orders table](docs/images/Orders_table.png)
+![Orders table](docs/images/Risk_table.png)
 
 ## What I found
 - Delay risk is driven mainly by **shipping mode**. Late rate by mode: First Class 100%, Second Class 79.8%, Same Day 47.9%, Standard Class 39.8% (overall 57.3%).
