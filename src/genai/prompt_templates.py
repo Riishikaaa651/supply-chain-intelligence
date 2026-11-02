@@ -109,6 +109,25 @@ Rules:
 - If the question is about extra days of delay, compare the extra days with the delay std above. Do not link days to another shipping mode.
 - If the question cannot be answered from the numbers above, say so in one line instead of guessing.
 - Do NOT give a new probability for this order. In the last line say the model must be re-run for an exact value.""",
+
+        "v5": """Order details:
+- Shipping mode: {shipping_mode}, Region: {order_region}
+- Predicted delay probability: {delay_prob:.0%} (risk level: {risk_level})
+- Overall late rate across all past orders: {overall_late_pct}%
+- Late rate by shipping mode: {mode_table}
+- Late rate by region: {region_table}
+- This order's shipping mode average delay: {mode_avg_delay:.2f} days (std {mode_delay_std:.2f})
+
+Manager's what-if question: {question}
+
+Write at most 4 lines. Each line is one short sentence. No bullets, no numbering, no blank lines.
+Rules:
+- If the question is about another shipping mode or region, compare the late rates from the lists above (current vs new, and vs the overall rate). If the new one is the same as the current one, say the order already uses it.
+- If the question is about extra days of delay, compare the extra days with the delay std above. Do not link days to another shipping mode.
+- If the question asks what to do or what to check, give one practical action based on the numbers above.
+- We have NO data about stock, inventory or suppliers, so do not mention them.
+- If the question cannot be answered from the numbers above, say so in one line instead of guessing.
+- Do NOT give a new probability for this order. Only if the question asks for a new or exact probability, finish with one line saying the model must be re-run for an exact value. Otherwise do NOT mention re-running the model.""",
     },
 
     # ---------------- SHORTAGE ----------------
@@ -206,6 +225,21 @@ Rules:
 - In one line, say whether the change would likely raise or lower the shortage risk (more demand means more risk, less demand means less risk). Use the word "likely".
 - We have NO data about supply, lead time or capacity, so do not mention them.
 - Do NOT give a new score or percentage. In the last line say the model must be re-run for an exact value.""",
+
+        "v5": """Product details:
+- Product: {product_name} (category: {category_name})
+- Shortage risk score: {shortage_prob:.2f} (ranking score, NOT a probability), risk level: {risk_level}
+- Average demand: {product_demand_mean:.1f} units, std {product_demand_std:.1f}
+
+Manager's what-if question: {question}
+
+Write at most 4 lines. Each line is one short sentence. No bullets, no numbering, no blank lines.
+Rules:
+- You may do simple arithmetic on the average demand and compare the change with the standard deviation.
+- If the question is about a change in demand or quantity, say in one line whether it would likely raise or lower the shortage risk (more demand means more risk, less demand means less risk). Use the word "likely".
+- If the question asks what to do or what to check, give one practical action based on the numbers above.
+- We have NO data about supply, lead time or capacity, so do not mention them.
+- Do NOT give a new score or percentage. Only if the question asks for a new or exact score, finish with one line saying the model must be re-run for an exact value. Otherwise do NOT mention re-running the model.""",
     },
 }
 
