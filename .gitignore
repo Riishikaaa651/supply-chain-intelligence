@@ -1,24 +1,33 @@
-#virtual environment
+# Virtual environment
 venv/
 
-#environment variables 
+# Environment variables and secrets
 .env
+.streamlit/secrets.toml
 
-#python cache
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
-
+.pytest_cache/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+notebooks/*_executed.ipynb
 
 # Data files (raw data usually large/private)
 data/raw/*
 !data/raw/.gitkeep
 
+# Processed datasets (large files)
+data/processed/
+
+# Database
+*.db
+
 # Trained models (usually large files)
 models/*.pkl
+models/*.joblib
 
 # Logs
 logs/*.log
@@ -29,15 +38,3 @@ Thumbs.db
 
 # VS Code settings (optional)
 .vscode/
-
-# Ignore executed notebook copies and checkpoints
-notebooks/*_executed.ipynb
-.ipynb_checkpoints/
-
-# Ignore processed datasets (large files)
-data/processed/
-
-.env
-venv/
-__pycache__/
-*.db
